@@ -1,0 +1,136 @@
+// components/cart/CartOverlay.jsx
+"use client";
+import { useEffect } from "react";
+import { useCartUI } from "@/stores/useCartUi";
+import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import CartItem from "./card_item";
+import useCartStore from "@/stores/useCartStore";
+const fmt = (v) => {
+  const n = Number(v ?? 0);
+  if (Number.isNaN(n)) return String(v ?? "");
+  return n.toFixed(2).replace(".", ",") + "€";
+};
+
+export default function CartOverlay({ mode = "overlay" }) {
+  const router = useRouter();
+  const pathname = usePathname();
+  const search = useSearchParams();
+  const { isOpen, close, open } = useCartUI();
+
+  const isQueryOpen = search?.get("cart") === "open";
+
+  // Sync URL <-> UI when used as overlay
+  useEffect(() => {
+    if (mode !== "overlay") return;
+    if (isQueryOpen && !isOpen) open();
+    if (!isQueryOpen && isOpen) close();
+  }, [isQueryOpen, isOpen, open, close, mode]);
+
+  const handleClose = () => {
+    close();
+    // remove ?cart=open but keep other params
+    const params = new URLSearchParams(search?.toString() || "");
+    params.delete("cart");
+    const url = params.toString() ? `${pathname}?${params}` : pathname;
+    router.replace(url, { scroll: false });
+  };
+  // Cart state (store)
+  const items = useCartStore((s) => s.items);
+  const inc = useCartStore((s) => s.inc);
+  const dec = useCartStore((s) => s.dec);
+  const removeItem = useCartStore((s) => s.removeItem);
+  const toggleExtra = useCartStore((s) => s.toggleExtra);
+  const getSubtotal = useCartStore((s) => s.getSubtotal);
+
+  if (!isOpen) return null;
+
+  return (
+    <>
+      {mode === "overlay" && isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center"
+          onClick={handleClose}
+        >
+          <div
+            className="w-[760px] max-w-[92vw] bg-white rounded-2xl shadow-2xl border overflow-hidden relative z-50"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={handleClose}
+              aria-label="Fermer"
+              className="absolute top-4 right-4 text-gray-400 hover:text-black transition"
+            >
+              ✕
+            </button>
+            {/* Header */}
+            <div className="px-6 sm:px-8 pt-6 sm:pt-8">
+              <h2 className="text-center text-2xl sm:text-[26px] font-semibold">
+                Votre panier
+              </h2>
+            </div>
+
+            {/* Columns header */}
+            <div
+              className="mt-6 border-t border-b px-6 sm:px-8 py-3 text-[13px] text-gray-500 hidden sm:grid"
+              style={{ gridTemplateColumns: "1fr 140px 120px" }}
+            >
+              <div>Le produit</div>
+              <div className="text-center">Quantité</div>
+              <div className="text-right">Total</div>
+            </div>
+
+            {/* Items */}
+            <div className="px-6 sm:px-8 py-4 max-h-[60vh] overflow-auto">
+              {items.length === 0 ? (
+                <p className="text-sm text-gray-600 text-center py-10">
+                  Ton panier est vide.
+                </p>
+              ) : (
+                <ul className="space-y-6">
+                  {items.map((line) => {
+                    const lineTotal =
+                      (line.unitPrice * (line.qty || 1)) +
+                      ((line.extra && line.extra.checked) ? (line.extra.price || 0) : 0);
+                    return (
+                      <CartItem
+                        key={line.id}
+                        image={typeof line.image === 'string' ? line.image : (line.image?.src || '')}
+                        title={line.title}
+                        unitPriceEUR={line.unitPrice}
+                        qty={line.qty}
+                        totalEUR={lineTotal}
+                        onDec={() => dec(line.id)}
+                        onInc={() => inc(line.id)}
+                        onRemove={() => removeItem(line.id)}
+                        extraLabel={line.extra ? `${line.extra.label} pour ${fmt(line.extra.price)}` : undefined}
+                        extraChecked={line.extra?.checked}
+                        onToggleExtra={() => toggleExtra(line.id)}
+                        isDragstick={line.title === "Le Drastick"}
+                      />
+                    );
+                  })}
+                </ul>
+              )}
+            </div>
+
+            {/* Footer */}
+            <div className="px-6 sm:px-8 pb-6 sm:pb-8">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Sous-Total</span>
+                <span className="font-semibold">{fmt(getSubtotal())}</span>
+              </div>
+              <button className="mt-4 w-full bg-pink-500 text-white rounded-md px-6 py-3 text-sm font-semibold">
+                Procéder au paiement
+              </button>
+              <p className="mt-2 text-[11px] text-gray-500 text-center">
+                Taxes incluses. Frais d&apos;expédition calculés à l&apos;étape
+                de paiement.
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
+
+    </>
+  );
+}

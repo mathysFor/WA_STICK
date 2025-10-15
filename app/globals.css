@@ -1,0 +1,47 @@
+/* Tailwind v4 */
+@import "tailwindcss";
+
+/* Tes couleurs/vars perso si besoin */
+:root {
+  --background: #ffffff;
+  --foreground: #111827;
+}
+
+/* (optionnel) dark mode */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #0a0a0a;
+    --foreground: #ededed;
+  }
+}
+
+/* Animation*/
+
+
+@keyframes marquee {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 25s linear infinite;
+}
+/* IMPORTANT : ne PAS fixer de font-family ici.
+   Laisse Next Font (Inter) s’appliquer via className sur <body>. */
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+
+/* Masque les scrollbars horizontales */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;  /* IE et Edge */
+  scrollbar-width: none;     /* Firefox */
+}
