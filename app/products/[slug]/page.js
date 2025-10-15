@@ -4,7 +4,7 @@ import { notFound } from "next/navigation";
 import { getProductBySlug } from "@/lib/products";
 import {useCartStore} from "@/stores/useCartStore";
 import { useCartUI } from "@/stores/useCartUi";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 
 export default function ProductPage({ params }) {
   const product = getProductBySlug(params.slug);
@@ -12,7 +12,6 @@ export default function ProductPage({ params }) {
 
   const router = useRouter();
   const pathname = usePathname();
-  const search = useSearchParams();
   const addItem = useCartStore((s) => s.addItem);
   const { open } = useCartUI();
 
@@ -32,6 +31,7 @@ export default function ProductPage({ params }) {
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState(product?.options?.sizes?.[0] || "Taille unique");
   const [rescue, setRescue] = useState(false);
+  const [searchString, setSearchString] = useState("");
 
   // Add-to-cart confirmation popup
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -51,6 +51,12 @@ export default function ProductPage({ params }) {
     updateW();
     window.addEventListener('resize', updateW);
     return () => window.removeEventListener('resize', updateW);
+  }, []);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSearchString(window.location.search || "");
+    }
   }, []);
 
   const total = useMemo(() => {
@@ -90,7 +96,7 @@ export default function ProductPage({ params }) {
   };
 
   const handleSeeCart = () => {
-    const params = new URLSearchParams(search?.toString() || "");
+    const params = new URLSearchParams(searchString || "");
     params.set("cart", "open");
     router.push(`${pathname}?${params.toString()}`, { scroll: false });
     open();

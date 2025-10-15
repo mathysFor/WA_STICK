@@ -1,8 +1,8 @@
 // components/cart/CartOverlay.jsx
 "use client";
-import { useEffect } from "react";
+import { useEffect,useState } from "react";
 import { useCartUI } from "@/stores/useCartUi";
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import CartItem from "./card_item";
 import useCartStore from "@/stores/useCartStore";
 const fmt = (v) => {
@@ -14,22 +14,57 @@ const fmt = (v) => {
 export default function CartOverlay({ mode = "overlay" }) {
   const router = useRouter();
   const pathname = usePathname();
-  const search = useSearchParams();
   const { isOpen, close, open } = useCartUI();
 
-  const isQueryOpen = search?.get("cart") === "open";
+  const [searchString, setSearchString] = useState("");
+  const [searchReady, setSearchReady] = useState(false);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const updateSearch = () => {
+      setSearchString(window.location.search || "");
+      setSearchReady(true);
+    };
+
+    // Initial read
+    updateSearch();
+
+    // Listen to browser back/forward
+    const onPopState = () => updateSearch();
+    window.addEventListener('popstate', onPopState);
+
+    // Patch pushState/replaceState to emit a custom event we can listen to
+    const origPush = history.pushState;
+    const origReplace = history.replaceState;
+    const notify = () => window.dispatchEvent(new Event('wa:navigate'));
+    history.pushState = function(...args) { origPush.apply(this, args); notify(); };
+    history.replaceState = function(...args) { origReplace.apply(this, args); notify(); };
+
+    const onNavigate = () => updateSearch();
+    window.addEventListener('wa:navigate', onNavigate);
+
+    return () => {
+      window.removeEventListener('popstate', onPopState);
+      window.removeEventListener('wa:navigate', onNavigate);
+      history.pushState = origPush;
+      history.replaceState = origReplace;
+    };
+  }, []);
+
+  const isQueryOpen = new URLSearchParams(searchString || "").get("cart") === "open";
 
   // Sync URL <-> UI when used as overlay
   useEffect(() => {
-    if (mode !== "overlay") return;
+    if (mode !== "overlay" || !searchReady) return;
     if (isQueryOpen && !isOpen) open();
     if (!isQueryOpen && isOpen) close();
-  }, [isQueryOpen, isOpen, open, close, mode]);
+  }, [isQueryOpen, isOpen, open, close, mode, searchReady]);
 
   const handleClose = () => {
     close();
     // remove ?cart=open but keep other params
-    const params = new URLSearchParams(search?.toString() || "");
+    const params = new URLSearchParams(searchString || "");
     params.delete("cart");
     const url = params.toString() ? `${pathname}?${params}` : pathname;
     router.replace(url, { scroll: false });

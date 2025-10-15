@@ -1,9 +1,9 @@
 'use client'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import logoImg from '../assets/logo.png'
-import { useRouter, usePathname, useSearchParams } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useCartUI } from "@/stores/useCartUi";
 import useCartStore from "@/stores/useCartStore";
 
@@ -16,15 +16,21 @@ export default function Topbar() {
 
   const router = useRouter();
   const pathname = usePathname();
-  const search = useSearchParams();
   const { open: openCartUI } = useCartUI();
   const cartCount = useCartStore((s) => s.items.reduce((acc, i) => acc + (i.qty || 1), 0));
   const [menuOpen, setMenuOpen] = useState(false);
+  const [searchString, setSearchString] = useState("");
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      setSearchString(window.location.search || "");
+    }
+  }, []);
 
   const openCart = () => {
-    const params = new URLSearchParams(search?.toString() || "");
+    const params = new URLSearchParams(searchString || "");
     params.set("cart", "open");
-    router.push(`${pathname}?${params}`, { scroll: false });
+    router.push(`${pathname}?${params.toString()}`, { scroll: false });
     openCartUI();
   };
 
