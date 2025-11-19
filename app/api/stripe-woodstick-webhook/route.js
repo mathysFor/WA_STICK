@@ -1,12 +1,14 @@
 import Stripe from "stripe";
-import SibApiV3Sdk from "sib-api-v3-sdk";
+import Brevo from "@getbrevo/brevo";
 import { NextResponse } from "next/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_WILLOU);
 
-const brevoClient = new SibApiV3Sdk.TransactionalEmailsApi();
-SibApiV3Sdk.ApiClient.instance.authentications["api-key"].apiKey =
-  process.env.BREVO_API_KEY;
+const brevoClient = new Brevo.TransactionalEmailsApi();
+brevoClient.setApiKey(
+  Brevo.TransactionalEmailsApiApiKeys.apiKey,
+  process.env.BREVO_API_KEY
+);
 
 export async function POST(req) {
   let rawBody;
