@@ -91,26 +91,18 @@ export async function POST(req) {
 
     // 🔹 Envoi de l’email via Brevo
     try {
-      await brevoClient.sendTransacEmail({
-        to: [{ email }],
-        sender: { email: "shop@wastick.com", name: "WASTICK" },
-        templateId: Number(process.env.BREVO_TEMPLATE_WOODSTICK),
-        params: {
-          firstname: name,
-          qty,
-          sizes: sizesText,
-          amount,
-          invoice_url: invoiceUrl,
-        },
-        attachment: pdfUrl
-          ? [
-              {
-                url: pdfUrl,
-                name: "facture.pdf",
-              },
-            ]
-          : undefined,
-      });
+    await brevoClient.sendTransacEmail({
+  to: [{ email }],
+  sender: { email: "shop@wastick.com", name: "WASTICK" },
+  templateId: Number(process.env.BREVO_TEMPLATE_WOODSTICK),
+  params: {
+    firstname: name,
+    qty,
+    sizes: sizesText,
+    amount,
+    invoice_url: invoiceUrl,
+  },
+});
 
       console.log("✔ Email envoyé à :", email);
     } catch (err) {
