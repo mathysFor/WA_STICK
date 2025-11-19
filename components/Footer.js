@@ -45,7 +45,7 @@ export default function Footer() {
             <ul className="space-y-3 text-lg">
               <li>
                 <a
-                  href="https://youtube.com"
+                  href="https://www.youtube.com/@WINTERACTIVITY"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:underline"
@@ -55,7 +55,7 @@ export default function Footer() {
               </li>
               <li>
                 <a
-                  href="https://instagram.com"
+                  href="https://www.instagram.com/winteractivity_/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="hover:underline"

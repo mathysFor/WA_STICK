@@ -78,14 +78,17 @@ export default function ProductPage({ params }) {
       image: typeof firstImage === "string" ? firstImage : firstImage?.src || "",
       unitPrice: product.priceEUR || 0,
       qty,
-      extra: product?.options?.extras?.find((e) => e.id === "rescue")
+      extra: rescueExtra
         ? {
             id: "rescue",
-            label: `Un baton de secours`,
+            label: "Un bâton de secours",
             price: RESCUE_PRICE,
             checked: !!rescue,
+            // IMPORTANT: ce champ doit contenir le price_xxx du bâton de secours
+            stripePriceId: rescueExtra.stripePriceId || "",
           }
         : undefined,
+      stripePriceId: product.stripePriceId || "",
     });
 
     // short delay to surface loader feedback

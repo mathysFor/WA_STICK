@@ -18,6 +18,7 @@ export default function CartOverlay({ mode = "overlay" }) {
 
   const [searchString, setSearchString] = useState("");
   const [searchReady, setSearchReady] = useState(false);
+  const [isPaying, setIsPaying] = useState(false);
 
   useEffect(() => {
     if (typeof window === "undefined") return;
@@ -76,6 +77,62 @@ export default function CartOverlay({ mode = "overlay" }) {
   const removeItem = useCartStore((s) => s.removeItem);
   const toggleExtra = useCartStore((s) => s.toggleExtra);
   const getSubtotal = useCartStore((s) => s.getSubtotal);
+
+
+  const handleCheckout = async () => {
+
+    if (!items || items.length === 0 || isPaying) return;
+ const lineItems = [];
+
+items.forEach((line) => {
+
+  // ligne principale : paire de bâtons
+  if (line.stripePriceId) {
+    lineItems.push({
+      price: line.stripePriceId,
+      quantity: line.qty || 1,
+    });
+  }
+
+
+
+
+  // extra : bâton de secours (facturé comme produit séparé)
+  if (line.extra?.checked) {
+    lineItems.push({
+      price: "price_1SVBsiRSqCge6S7JZZKNm5TZ",
+      quantity: 1,
+    });
+  }
+});
+
+
+
+    try {
+      setIsPaying(true);
+      const res = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ items: lineItems }),
+      });
+
+      if (!res.ok) {
+        console.error("[checkout] Erreur HTTP", res.status);
+        return;
+      }
+
+      const data = await res.json();
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        console.error("[checkout] Pas d'URL de checkout retournée", data);
+      }
+    } catch (err) {
+      console.error("[checkout] Erreur réseau ou Stripe", err);
+    } finally {
+      setIsPaying(false);
+    }
+  };
 
   if (!isOpen) return null;
 
@@ -154,8 +211,12 @@ export default function CartOverlay({ mode = "overlay" }) {
                 <span className="text-gray-600">Sous-Total</span>
                 <span className="font-semibold">{fmt(getSubtotal())}</span>
               </div>
-              <button className="mt-4 w-full bg-pink-500 text-white rounded-md px-6 py-3 text-sm font-semibold">
-                Procéder au paiement
+              <button
+                onClick={handleCheckout}
+                disabled={items.length === 0 || isPaying}
+                className="mt-4 w-full bg-pink-500 text-white rounded-md px-6 py-3 text-sm font-semibold disabled:opacity-60 disabled:cursor-not-allowed"
+              >
+                {isPaying ? "Redirection en cours..." : "Procéder au paiement"}
               </button>
               <p className="mt-2 text-[11px] text-gray-500 text-center">
                 Taxes incluses. Frais d&apos;expédition calculés à l&apos;étape

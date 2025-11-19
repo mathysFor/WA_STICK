@@ -43,7 +43,7 @@ export const Products = ({ fromShop }) => {
                   </div>
                   <h3 className="mt-6 text-xl md:text-2xl font-semibold">{p.name}</h3>
 
-                  <p className="mt-2 text-lg italic opacity-80">{fromShop ? p.priceEUR + "€" :  p.desc_shop}</p>
+                  <p className="mt-2 text-lg italic opacity-80">{fromShop ? p.priceEUR + "0€" :  p.desc_shop}</p>
                 </article>
               </Link>
             ))}
