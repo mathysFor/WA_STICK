@@ -1,5 +1,5 @@
 import Stripe from "stripe";
-import Brevo from "@getbrevo/brevo";
+import * as Brevo from "@getbrevo/brevo";
 import { NextResponse } from "next/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_WILLOU);
