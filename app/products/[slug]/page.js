@@ -18,6 +18,8 @@ export default function ProductPage({ params }) {
   const getSrc = (img) => (typeof img === "string" ? img : img?.src || "");
   const IMAGES = (product.images || []).map(getSrc);
   const SPECS = product.specs || [];
+  const DIRECT_CHECKOUT_URL = product.directCheckoutUrl || product.paymentLinkUrl || "";
+  const isDirectCheckout = !!DIRECT_CHECKOUT_URL;
 
   // prices derived from product data
   let BASE_PRICE = 0;
@@ -30,8 +32,12 @@ export default function ProductPage({ params }) {
   const [active, setActive] = useState(0);
   const [qty, setQty] = useState(1);
   const [size, setSize] = useState(product?.options?.sizes?.[0] || "Taille unique");
+  const [sizesList, setSizesList] = useState([product?.options?.sizes?.[0] || "Taille unique"]);
   const [rescue, setRescue] = useState(false);
   const [searchString, setSearchString] = useState("");
+  const taxText = isDirectCheckout
+    ? "TVA non applicable – article 293 B du CGI. Frais d'expédition calculés à l'étape de paiement."
+    : "Taxes incluses. Frais d'expédition calculés à l'étape de paiement.";
 
   // Add-to-cart confirmation popup
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -64,6 +70,44 @@ export default function ProductPage({ params }) {
     const rescueTotal = rescue ? RESCUE_PRICE : 0;
     return (pairsTotal + rescueTotal).toFixed(2).replace(".", ",");
   }, [qty, rescue]);
+
+  const primaryLabel = isDirectCheckout
+    ? `Acheter maintenant (${total}€)`
+    : `Ajouter au panier (${total}€)`;
+
+ const handleBuyNow = async () => {
+  console.log(qty,sizesList,product);
+  
+  try {
+    const res = await fetch("/api/create-checkout-wood", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        quantity: qty,
+        sizes: sizesList,
+        productSlug: product.slug,
+      }),
+    });
+
+    if (!res.ok) {
+      console.error("[checkout] Failed to create session", res.status);
+      return;
+    }
+
+    const data = await res.json();
+    if (data?.url) {
+      if (typeof window !== "undefined") {
+        window.location.href = data.url;
+      } else {
+        router.push(data.url);
+      }
+    }
+  } catch (e) {
+    console.error("[checkout] Error calling create-checkout-wood:", e);
+  }
+};
 
   const handleAddToCart = async () => {
     setAdding(true);
@@ -143,7 +187,7 @@ export default function ProductPage({ params }) {
             <h1 className="text-3xl md:text-4xl font-semibold tracking-tight">{product.name}</h1>
             <p className="mt-3 text-gray-800 font-medium">{(product.priceEUR || 0).toFixed(2).replace(".", ",")}€ · la paire</p>
             <p className="mt-1 text-xs text-gray-500">
-              Taxes incluses. Frais d'expédition calculés à l'étape de paiement.
+              {taxText}
             </p>
 
             {/* SIZE */}
@@ -166,7 +210,13 @@ export default function ProductPage({ params }) {
               <div className="inline-flex items-center gap-4 rounded-md border px-3 py-2">
                 <button
                   type="button"
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  onClick={() => {
+                    setQty((q) => {
+                      const newQ = Math.max(1, q - 1);
+                      setSizesList((prev) => prev.slice(0, newQ));
+                      return newQ;
+                    });
+                  }}
                   className="h-8 w-8 grid place-items-center rounded-md border"
                 >
                   –
@@ -174,13 +224,51 @@ export default function ProductPage({ params }) {
                 <span className="min-w-[1.5rem] text-center">{qty}</span>
                 <button
                   type="button"
-                  onClick={() => setQty((q) => Math.min(99, q + 1))}
+                  onClick={() => {
+                    setQty((q) => {
+                      const newQ = Math.min(99, q + 1);
+                      setSizesList((prev) => {
+                        const baseSize = product?.options?.sizes?.[0] || "Taille unique";
+                        if (prev.length >= newQ) return prev;
+                        const copy = [...prev];
+                        while (copy.length < newQ) {
+                          copy.push(baseSize);
+                        }
+                        return copy;
+                      });
+                      return newQ;
+                    });
+                  }}
                   className="h-8 w-8 grid place-items-center rounded-md border"
                 >
                   +
                 </button>
               </div>
             </div>
+
+            {sizesList.length > 1 && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium mb-2">Tailles supplémentaires</label>
+                <div className="flex flex-col gap-3">
+                  {sizesList.slice(1).map((sz, idx) => (
+                    <select
+                      key={idx}
+                      className="w-full max-w-xs rounded-md border border-gray-300 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
+                      value={sz}
+                      onChange={(e) => {
+                        const updated = [...sizesList];
+                        updated[idx + 1] = e.target.value;
+                        setSizesList(updated);
+                      }}
+                    >
+                      {(product?.options?.sizes || ["Taille unique"]).map((s) => (
+                        <option key={s}>{s}</option>
+                      ))}
+                    </select>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* RESCUE (only for Drastick / products with rescue extra) */}
             {rescueExtra && (
@@ -200,15 +288,15 @@ export default function ProductPage({ params }) {
             {/* CTA */}
             <div className="mt-6">
               <button
-                onClick={handleAddToCart}
-                disabled={adding}
+                onClick={isDirectCheckout ? handleBuyNow : handleAddToCart}
+                disabled={!isDirectCheckout && adding}
                 className={`w-full sm:w-auto sm:min-w-[260px] inline-flex items-center justify-center rounded-md px-6 py-3 text-sm font-semibold tracking-wide ${
-                  adding
+                  !isDirectCheckout && adding
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "bg-pink-500 text-white hover:opacity-90 active:opacity-80"
                 }`}
               >
-                {adding ? (
+                {!isDirectCheckout && adding ? (
                   <span className="flex items-center gap-2 justify-center">
                     <svg
                       className="animate-spin h-4 w-4 text-gray-700"
@@ -222,7 +310,7 @@ export default function ProductPage({ params }) {
                     Ajout...
                   </span>
                 ) : (
-                  <>Ajouter au panier ({total}€)</>
+                  primaryLabel
                 )}
               </button>
             </div>
@@ -291,7 +379,7 @@ export default function ProductPage({ params }) {
             <h1 className="text-2xl font-semibold tracking-tight">{product.name}</h1>
             <p className="mt-2 text-gray-800 font-medium">{(product.priceEUR || 0).toFixed(2).replace(".", ",")}€ · la paire</p>
             <p className="text-xs text-gray-500 mt-1">
-              Taxes incluses. Frais d'expédition calculés à l'étape de paiement.
+              {taxText}
             </p>
 
             {/* Size */}
@@ -314,7 +402,13 @@ export default function ProductPage({ params }) {
               <div className="inline-flex items-center gap-4 rounded-md border px-3 py-2">
                 <button
                   type="button"
-                  onClick={() => setQty((q) => Math.max(1, q - 1))}
+                  onClick={() => {
+                    setQty((q) => {
+                      const newQ = Math.max(1, q - 1);
+                      setSizesList((prev) => prev.slice(0, newQ));
+                      return newQ;
+                    });
+                  }}
                   className="h-8 w-8 grid place-items-center rounded-md border"
                 >
                   –
@@ -322,13 +416,51 @@ export default function ProductPage({ params }) {
                 <span className="min-w-[1.5rem] text-center">{qty}</span>
                 <button
                   type="button"
-                  onClick={() => setQty((q) => Math.min(99, q + 1))}
+                  onClick={() => {
+                    setQty((q) => {
+                      const newQ = Math.min(99, q + 1);
+                      setSizesList((prev) => {
+                        const baseSize = product?.options?.sizes?.[0] || "Taille unique";
+                        if (prev.length >= newQ) return prev;
+                        const copy = [...prev];
+                        while (copy.length < newQ) {
+                          copy.push(baseSize);
+                        }
+                        return copy;
+                      });
+                      return newQ;
+                    });
+                  }}
                   className="h-8 w-8 grid place-items-center rounded-md border"
                 >
                   +
                 </button>
               </div>
             </div>
+
+            {sizesList.length > 1 && (
+              <div className="mt-4">
+                <label className="block text-sm font-medium mb-2">Tailles supplémentaires</label>
+                <div className="flex flex-col gap-3">
+                  {sizesList.slice(1).map((sz, idx) => (
+                    <select
+                      key={idx}
+                      className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
+                      value={sz}
+                      onChange={(e) => {
+                        const updated = [...sizesList];
+                        updated[idx + 1] = e.target.value;
+                        setSizesList(updated);
+                      }}
+                    >
+                      {(product?.options?.sizes || ["Taille unique"]).map((s) => (
+                        <option key={s}>{s}</option>
+                      ))}
+                    </select>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Rescue (only for Drastick / products with rescue extra) */}
             {rescueExtra && (
@@ -346,15 +478,15 @@ export default function ProductPage({ params }) {
             {/* CTA */}
             <div className="mt-5">
               <button
-                onClick={handleAddToCart}
-                disabled={adding}
+                onClick={isDirectCheckout ? handleBuyNow : handleAddToCart}
+                disabled={!isDirectCheckout && adding}
                 className={`w-full sm:w-auto sm:min-w-[260px] inline-flex items-center justify-center rounded-md px-6 py-3 text-sm font-semibold tracking-wide ${
-                  adding
+                  !isDirectCheckout && adding
                     ? "bg-gray-300 text-gray-700 cursor-not-allowed"
                     : "bg-pink-500 text-white hover:opacity-90 active:opacity-80"
                 }`}
               >
-                {adding ? (
+                {!isDirectCheckout && adding ? (
                   <span className="flex items-center gap-2 justify-center">
                     <svg
                       className="animate-spin h-4 w-4 text-gray-700"
@@ -368,7 +500,7 @@ export default function ProductPage({ params }) {
                     Ajout...
                   </span>
                 ) : (
-                  <>Ajouter au panier ({total}€)</>
+                  primaryLabel
                 )}
               </button>
             </div>
@@ -399,7 +531,7 @@ export default function ProductPage({ params }) {
       </div>
 
       {/* Add-to-cart confirmation modal */}
-      {confirmOpen && (
+      {!isDirectCheckout && confirmOpen && (
         <div className="fixed inset-0 z-[60] flex items-end sm:items-center justify-center">
           {/* Backdrop */}
           <div
