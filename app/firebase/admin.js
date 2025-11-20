@@ -21,10 +21,6 @@ if (!admin.apps.length) {
 
   privateKey = privateKey.replace(/\\n/g, "\n");
 
-  console.log("[FIREBASE ADMIN] Initializing with projectId:", projectId);
-  console.log("[FIREBASE ADMIN] clientEmail:", clientEmail);
-  console.log("[FIREBASE ADMIN] privateKey length:", privateKey.length);
-
   app = admin.initializeApp({
     credential: admin.credential.cert({
       projectId,

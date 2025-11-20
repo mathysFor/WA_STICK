@@ -70,7 +70,6 @@ export async function POST(req) {
       if (!qty && totalQty > 0) {
         qty = String(totalQty);
       }
-      console.log(items);
       
 
       for (const item of items) {

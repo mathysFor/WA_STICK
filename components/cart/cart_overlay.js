@@ -127,7 +127,18 @@ items.forEach((line) => {
       });
 
       if (!res.ok) {
-        console.error("[checkout] Erreur HTTP", res.status);
+        if (res.status === 400) {
+          try {
+            const data = await res.json();
+            const msg = data?.error || "Ce produit est épuisé ou la quantité demandée n'est plus disponible.";
+            alert(msg);
+          } catch (e) {
+            alert("Ce produit est épuisé ou la quantité demandée n'est plus disponible.");
+          }
+        } else {
+          console.error("[checkout] Erreur HTTP", res.status);
+          alert("Une erreur est survenue lors de la création du paiement. Merci de réessayer.");
+        }
         return;
       }
 

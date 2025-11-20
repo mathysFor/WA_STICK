@@ -9,10 +9,6 @@ export async function POST(req) {
   try {
     const { items } = await req.json();
 
-    console.log('====================================');
-    console.log(items);
-    console.log('====================================');
-
     if (!items || !Array.isArray(items) || items.length === 0) {
       return new Response(JSON.stringify({ error: "No items provided" }), {
         status: 400,
@@ -35,9 +31,12 @@ for (const item of items) {
   const snap = await ref.get();
 
   if (!snap.exists) {
-    return NextResponse.json(
-      { error: `Produit inconnu : ${productId}` },
-      { status: 400 }
+    return new Response(
+      JSON.stringify({ error: `Produit inconnu : ${productId}` }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   }
 
@@ -45,9 +44,12 @@ for (const item of items) {
   const available = data.total - data.sold;
 
   if (available < item.quantity) {
-    return NextResponse.json(
-      { error: `Stock insuffisant pour ${item.title}` },
-      { status: 400 }
+    return new Response(
+      JSON.stringify({ error: `Stock insuffisant pour ${item.title}` }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
     );
   }
 }
