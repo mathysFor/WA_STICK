@@ -103,7 +103,7 @@ export async function POST(req) {
 
 
       await brevoClient.sendTransacEmail({
-        to: ["mfornasier@yahoo.fr"],
+        to: [{email : "mfornasier@yahoo.fr"}],
         sender: { email: "wastick@wastick.com", name: "Mickael de Wastick" },
         templateId:2,
         params: {
