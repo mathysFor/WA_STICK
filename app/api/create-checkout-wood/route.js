@@ -60,6 +60,11 @@ export async function POST(req) {
       phone_number_collection: {
         enabled: true,
       },
+      metadata: {
+        qty: String(qty),
+        sizes: sizes.join(","),
+        productSlug,
+      },
     });
 
     return NextResponse.json({ url: session.url });

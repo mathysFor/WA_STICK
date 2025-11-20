@@ -117,7 +117,8 @@ export async function POST(req) {
           postal_code : session.customer_details?.address.postal_code,
           line : session.customer_details?.address.line1 || session.customer_details?.address.line2,
           phone : session.customer_details?.phone,
-
+          qty : session?.metadata?.qty || "",
+          sizes : session?.metadata?.sizes || "",
         },
       });
 
