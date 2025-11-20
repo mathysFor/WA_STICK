@@ -56,12 +56,6 @@ export async function POST(req) {
     let pdfUrl = null;
     let invoiceUrl = null;
 
-    console.log('====================================');
-    console.log(id);
-    console.log(qty);
-
-    console.log('====================================');
-
 
 
     const ref = adminDb.collection("stock").doc(id);

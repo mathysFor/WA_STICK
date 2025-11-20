@@ -78,39 +78,57 @@ export default function ProductPage({ params }) {
 
     
  const handleBuyNow = async () => {
+    try {
+      const res = await fetch("/api/create-checkout-wood", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          quantity: qty,
+          sizes: sizesList,
+          productSlug: product.slug,
+          id: product.id,
+        }),
+      });
 
-  
-  try {
-    const res = await fetch("/api/create-checkout-wood", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        quantity: qty,
-        sizes: sizesList,
-        productSlug: product.slug,
-        id: product.id,
-      }),
-    });
-
-    if (!res.ok) {
-      console.error("[checkout] Failed to create session", res.status);
-      return;
-    }
-
-    const data = await res.json();
-    if (data?.url) {
-      if (typeof window !== "undefined") {
-        window.location.href = data.url;
-      } else {
-        router.push(data.url);
+      if (!res.ok) {
+        if (res.status === 400) {
+          try {
+            const data = await res.json();
+            const msg =
+              data?.error ||
+              "Ce produit est épuisé ou la quantité demandée n'est plus disponible.";
+            alert(msg);
+          } catch (err) {
+            alert(
+              "Ce produit est épuisé ou la quantité demandée n'est plus disponible."
+            );
+          }
+        } else {
+          console.error("[checkout] Failed to create session", res.status);
+          alert(
+            "Une erreur est survenue lors de la création du paiement. Merci de réessayer."
+          );
+        }
+        return;
       }
+
+      const data = await res.json();
+      if (data?.url) {
+        if (typeof window !== "undefined") {
+          window.location.href = data.url;
+        } else {
+          router.push(data.url);
+        }
+      }
+    } catch (e) {
+      console.error("[checkout] Error calling create-checkout-wood:", e);
+      alert(
+        "Une erreur est survenue lors de la création du paiement. Merci de réessayer."
+      );
     }
-  } catch (e) {
-    console.error("[checkout] Error calling create-checkout-wood:", e);
-  }
-};
+  };
 
   const handleAddToCart = async () => {
     setAdding(true);

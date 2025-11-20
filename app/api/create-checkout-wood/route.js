@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 
 const stripeSecretKey = process.env.STRIPE_SECRET_WILLOU;
 const priceId = "price_1SVDGN2SUMsUUiRSXlt4JQUA";
+import { adminDb } from "@/app/firebase/admin";
 
 if (!stripeSecretKey) {
   console.warn("[create-checkout-wood] Missing STRIPE_SECRET_KEY_WOOD env var");
@@ -34,6 +35,36 @@ export async function POST(req) {
       req.headers.get("origin") ||
       process.env.NEXT_PUBLIC_APP_URL ||
       "http://localhost:3000";
+
+
+  const productId = body.id; // ou item.title en version nettoyée
+
+  const ref = adminDb.collection("stock").doc(productId);
+  const snap = await ref.get();
+
+  if (!snap.exists) {
+    return new Response(
+      JSON.stringify({ error: `Produit inconnu : ${productId}` }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
+  const data = snap.data();
+  const available = data.total - data.sold;
+
+  if (available < qty) {
+    return new Response(
+      JSON.stringify({ error: `Stock insuffisant pour ${productId}` }),
+      {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  }
+
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
