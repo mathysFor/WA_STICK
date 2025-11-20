@@ -47,7 +47,7 @@ export async function POST(req) {
           quantity: qty,
         },
       ],
-      success_url: `${origin}/merci-wood?session_id={CHECKOUT_SESSION_ID}`,
+      success_url: `${origin}/merci?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${origin}/products/${productSlug}?canceled=1`,
       shipping_options: [
         {

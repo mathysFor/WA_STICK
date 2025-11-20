@@ -75,6 +75,8 @@ export default function ProductPage({ params }) {
     ? `Acheter maintenant (${total}€)`
     : `Ajouter au panier (${total}€)`;
 
+
+    
  const handleBuyNow = async () => {
   
   try {
@@ -150,6 +152,7 @@ export default function ProductPage({ params }) {
   };
 
   const handleContinue = () => setConfirmOpen(false);
+
 
   return (
     <main className="min-h-screen w-full">
@@ -245,7 +248,7 @@ export default function ProductPage({ params }) {
               </div>
             </div>
 
-            {sizesList.length > 1 && (
+            {!((product.id === "fantastic" )||( product.id === "drastick")) && sizesList.length > 1 && (
               <div className="mt-4">
                 <label className="block text-sm font-medium mb-2">Tailles supplémentaires</label>
                 <div className="flex flex-col gap-3">
