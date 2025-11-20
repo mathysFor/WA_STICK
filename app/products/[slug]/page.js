@@ -575,10 +575,10 @@ export default function ProductPage({ params }) {
             <p className="mt-1 text-sm text-gray-600">« {product.name} » a bien été ajouté à votre panier.</p>
             <div className="mt-5 flex flex-col sm:flex-row gap-3">
               <button
-                onClick={handleSeeCart}
+                onClick={handleContinue}
                 className="w-full sm:w-auto inline-flex items-center justify-center rounded-md border px-5 py-3 text-sm font-semibold"
               >
-                Voir le panier
+                Continuer mes achats
               </button>
               <button
                 onClick={handleSeeCart}
