@@ -57,6 +57,9 @@ export async function POST(req) {
       invoice_creation: {
         enabled: true,
       },
+      phone_number_collection: {
+        enabled: true,
+      },
     });
 
     return NextResponse.json({ url: session.url });

@@ -76,7 +76,6 @@ export default function ProductPage({ params }) {
     : `Ajouter au panier (${total}€)`;
 
  const handleBuyNow = async () => {
-  console.log(qty,sizesList,product);
   
   try {
     const res = await fetch("/api/create-checkout-wood", {

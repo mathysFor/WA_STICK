@@ -59,12 +59,9 @@ export async function POST(req) {
       if (session.invoice) {
         const invoice = await stripe.invoices.retrieve(session.invoice);
         pdfUrl = invoice.invoice_pdf || null;
-        invoiceUrl =
-          invoice.hosted_invoice_url || invoice.invoice_pdf || null;
+        invoiceUrl = invoice.hosted_invoice_url || invoice.invoice_pdf || null;
       } else if (session.payment_intent) {
-        const pi = await stripe.paymentIntents.retrieve(
-          session.payment_intent
-        );
+        const pi = await stripe.paymentIntents.retrieve(session.payment_intent);
         const charge = pi.charges?.data?.[0];
         if (charge?.receipt_url) {
           invoiceUrl = charge.receipt_url;
@@ -91,18 +88,38 @@ export async function POST(req) {
 
     // 🔹 Envoi de l’email via Brevo
     try {
-    await brevoClient.sendTransacEmail({
-  to: [{ email }],
-  sender: { email: "shop@wastick.com", name: "WASTICK" },
-  templateId: Number(process.env.BREVO_TEMPLATE_WOODSTICK),
-  params: {
-    firstname: name,
-    qty,
-    sizes: sizesText,
-    amount,
-    invoice_url: invoiceUrl,
-  },
-});
+      await brevoClient.sendTransacEmail({
+        to: [{ email }],
+        sender: { email: "shop@wastick.com", name: "WASTICK" },
+        templateId: Number(process.env.BREVO_TEMPLATE_WOODSTICK),
+        params: {
+          firstname: name,
+          qty,
+          sizes: sizesText,
+          amount,
+          invoice_url: invoiceUrl,
+        },
+      });
+
+
+      await brevoClient.sendTransacEmail({
+        to: ["mfornasier@yahoo.fr"],
+        sender: { email: "wastick@wastick.com", name: "Mickael de WASTICK" },
+        templateId:2,
+        params: {
+          firstname: name,
+          qty,
+          sizes: sizesText,
+          amount,
+          invoice_url: invoiceUrl,
+          shipping_adress: session.customer_details?.address,
+          city : session.customer_details?.address.city,
+          postal_code : session.customer_details?.address.postal_code,
+          line : session.customer_details?.address.line1 || session.customer_details?.address.line2,
+          phone : session.customer_details?.phone,
+
+        },
+      });
 
       console.log("✔ Email envoyé à :", email);
     } catch (err) {
