@@ -90,7 +90,7 @@ export async function POST(req) {
     try {
       await brevoClient.sendTransacEmail({
         to: [{ email }],
-        sender: { email: "shop@wastick.com", name: "WASTICK" },
+        sender: { email: "wastick@wastick.com", name: "Mickael de Wastick" },
         templateId: Number(process.env.BREVO_TEMPLATE_WOODSTICK),
         params: {
           firstname: name,
@@ -104,7 +104,7 @@ export async function POST(req) {
 
       await brevoClient.sendTransacEmail({
         to: ["mfornasier@yahoo.fr"],
-        sender: { email: "wastick@wastick.com", name: "Mickael de WASTICK" },
+        sender: { email: "wastick@wastick.com", name: "Mickael de Wastick" },
         templateId:2,
         params: {
           firstname: name,
