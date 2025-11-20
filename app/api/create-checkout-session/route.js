@@ -14,9 +14,17 @@ export async function POST(req) {
       });
     }
 
+    // Stripe n'accepte que certains champs dans line_items (price, quantity, etc.)
+    // On nettoie donc les items pour ne garder que ce qui est supporté.
+    const lineItems = items.map((item) => ({
+      price: item.price,
+      quantity: item.quantity,
+    }));
+
     const session = await stripe.checkout.sessions.create({
       mode: "payment",
-      line_items: items, // [{ price: 'price_xxx', quantity: 1 }, ...]
+      line_items: lineItems, // [{ price: 'price_xxx', quantity: 1 }, ...]
+      payment_method_types: ["card"],
       shipping_address_collection: {
         allowed_countries: ["FR"],
       },
@@ -36,6 +44,9 @@ export async function POST(req) {
             model: item.title.toLowerCase().replace(/\s+/g, "_"), // "Le Fantastic" → "le_fantastic"
           }))
         ),
+      },
+        phone_number_collection: {
+        enabled: true,
       },
     });
 

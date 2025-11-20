@@ -104,7 +104,7 @@ items.forEach((line) => {
   // extra : bâton de secours (facturé comme produit séparé)
   if (line.extra?.checked) {
     lineItems.push({
-      price: "price_1SVBsiRSqCge6S7JZZKNm5TZ",
+      price: "price_1SVATwEiLgW0Mm2XghXp0yk4",
       quantity: 1,
       title : "Extra Drastick - Bâton de secours",
     });
