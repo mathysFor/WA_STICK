@@ -8,10 +8,10 @@ export async function POST(req) {
     const { items } = await req.json();
 
     if (!items || !Array.isArray(items) || items.length === 0) {
-      return new Response(
-        JSON.stringify({ error: "No items provided" }),
-        { status: 400, headers: { "Content-Type": "application/json" } }
-      );
+      return new Response(JSON.stringify({ error: "No items provided" }), {
+        status: 400,
+        headers: { "Content-Type": "application/json" },
+      });
     }
 
     const session = await stripe.checkout.sessions.create({
@@ -27,12 +27,22 @@ export async function POST(req) {
       ],
       success_url: `${process.env.STRIPE_SUCCESS_URL}?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: process.env.STRIPE_CANCEL_URL,
+      metadata: {
+        items: JSON.stringify(
+          items.map((item) => ({
+            priceId: item.price,
+            quantity: item.quantity,
+            title: item.title, // pratique aussi
+            model: item.title.toLowerCase().replace(/\s+/g, "_"), // "Le Fantastic" → "le_fantastic"
+          }))
+        ),
+      },
     });
 
-    return new Response(
-      JSON.stringify({ url: session.url }),
-      { status: 200, headers: { "Content-Type": "application/json" } }
-    );
+    return new Response(JSON.stringify({ url: session.url }), {
+      status: 200,
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (err) {
     console.error("[api/create-checkout-session] error:", err);
     return new Response(
