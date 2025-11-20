@@ -78,6 +78,7 @@ export default function ProductPage({ params }) {
 
     
  const handleBuyNow = async () => {
+
   
   try {
     const res = await fetch("/api/create-checkout-wood", {
@@ -89,6 +90,7 @@ export default function ProductPage({ params }) {
         quantity: qty,
         sizes: sizesList,
         productSlug: product.slug,
+        id: product.id,
       }),
     });
 

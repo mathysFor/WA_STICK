@@ -64,6 +64,7 @@ export async function POST(req) {
         qty: String(qty),
         sizes: sizes.join(","),
         productSlug,
+        id: body.id || "",
       },
     });
 

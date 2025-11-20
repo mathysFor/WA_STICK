@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import * as Brevo from "@getbrevo/brevo";
 import { NextResponse } from "next/server";
+import { adminDb, admin } from "@/app/firebase/admin";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_WILLOU);
 
@@ -44,7 +45,7 @@ export async function POST(req) {
     const amount = session.amount_total
       ? session.amount_total / 100
       : undefined;
-
+      const id = session.metadata?.id || "";
     // ✅ Si pas d’email, on ne tente rien
     if (!email) {
       console.error("❌ Pas d’email dans customer_details, on stop.");
@@ -54,6 +55,11 @@ export async function POST(req) {
     // 🔹 On essaie de récupérer une facture ou au moins un reçu Stripe
     let pdfUrl = null;
     let invoiceUrl = null;
+
+    const ref = adminDb.collection("stock").doc(id);
+            await ref.update({
+              sold: admin.firestore.FieldValue.increment(qty),
+            });
 
     try {
       if (session.invoice) {
