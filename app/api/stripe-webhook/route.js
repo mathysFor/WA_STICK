@@ -3,7 +3,6 @@ import * as Brevo from "@getbrevo/brevo";
 import { NextResponse } from "next/server";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
-
 const brevoClient = new Brevo.TransactionalEmailsApi();
 brevoClient.setApiKey(
   Brevo.TransactionalEmailsApiApiKeys.apiKey,
@@ -24,6 +23,9 @@ export async function POST(req) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
+
+    
+
   } catch (err) {
     console.error("❌ SIGNATURE ERROR :", err.message);
     return new Response("Invalid signature", { status: 400 });
@@ -77,7 +79,7 @@ export async function POST(req) {
           const q = it.quantity ?? 1;
           return `• ${title} × ${q}`;
         })
-        .join("\n");
+      .join("<br />");
     }
 
     const amount = session.amount_total
@@ -175,6 +177,7 @@ export async function POST(req) {
                 }`
               : ""),
         },
+          invoice_url: invoiceUrl,
       });
 
       console.log("✔ Emails envoyés (client + producteur) pour :", email);
