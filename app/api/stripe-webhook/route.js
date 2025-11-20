@@ -1,7 +1,7 @@
 import Stripe from "stripe";
 import * as Brevo from "@getbrevo/brevo";
 import { NextResponse } from "next/server";
-import { adminDb,admin } from "@/app/firebase/admin";
+import { adminDb, admin } from "@/app/firebase/admin";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const brevoClient = new Brevo.TransactionalEmailsApi();
@@ -11,10 +11,6 @@ brevoClient.setApiKey(
 );
 
 export async function POST(req) {
-
-  console.log("🔥 PRIVATE KEY LENGTH:", process.env.FIREBASE_ADMIN_PRIVATE_KEY?.length);
-console.log("🔥 PRIVATE KEY START:", process.env.FIREBASE_ADMIN_PRIVATE_KEY?.slice(0, 30));
-console.log("🔥 PRIVATE KEY END:", process.env.FIREBASE_ADMIN_PRIVATE_KEY?.slice(-30));
   let rawBody;
   let signature;
   let event;
@@ -75,7 +71,6 @@ console.log("🔥 PRIVATE KEY END:", process.env.FIREBASE_ADMIN_PRIVATE_KEY?.sli
 
       for (const item of items) {
         const ref = adminDb.collection("stock").doc(item.model);
-
         await ref.update({
           sold: admin.firestore.FieldValue.increment(item.quantity),
         });
