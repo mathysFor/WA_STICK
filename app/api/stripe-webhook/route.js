@@ -23,9 +23,6 @@ export async function POST(req) {
       signature,
       process.env.STRIPE_WEBHOOK_SECRET
     );
-
-    
-
   } catch (err) {
     console.error("❌ SIGNATURE ERROR :", err.message);
     return new Response("Invalid signature", { status: 400 });
@@ -74,12 +71,11 @@ export async function POST(req) {
       // Ex : "• Le Fantastic × 2\n• Le Drastick × 4\n• Extra Drastick - Bâton de secours × 1"
       itemsListText = items
         .map((it) => {
-          const title =
-            it.title || it.model || it.priceId || "Produit Wastick";
+          const title = it.title || it.model || it.priceId || "Produit Wastick";
           const q = it.quantity ?? 1;
           return `• ${title} × ${q}`;
         })
-      .join("<br />");
+        .join("<br />");
     }
 
     const amount = session.amount_total
@@ -102,9 +98,7 @@ export async function POST(req) {
         pdfUrl = invoice.invoice_pdf || null;
         invoiceUrl = invoice.hosted_invoice_url || invoice.invoice_pdf || null;
       } else if (session.payment_intent) {
-        const pi = await stripe.paymentIntents.retrieve(
-          session.payment_intent
-        );
+        const pi = await stripe.paymentIntents.retrieve(session.payment_intent);
         const charge = pi.charges?.data?.[0];
         if (charge?.receipt_url) {
           invoiceUrl = charge.receipt_url;
@@ -177,7 +171,7 @@ export async function POST(req) {
                 }`
               : ""),
         },
-          invoice_url: invoiceUrl,
+        invoice_url: invoiceUrl,
       });
 
       console.log("✔ Emails envoyés (client + producteur) pour :", email);

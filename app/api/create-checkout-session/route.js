@@ -45,7 +45,10 @@ export async function POST(req) {
           }))
         ),
       },
-        phone_number_collection: {
+      phone_number_collection: {
+        enabled: true,
+      },
+      invoice_creation: {
         enabled: true,
       },
     });
