@@ -1,11 +1,17 @@
 // app/api/create-checkout-session/route.js
 import Stripe from "stripe";
 
+import { adminDb } from "@/app/firebase/admin";
+
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 export async function POST(req) {
   try {
     const { items } = await req.json();
+
+    console.log('====================================');
+    console.log(items);
+    console.log('====================================');
 
     if (!items || !Array.isArray(items) || items.length === 0) {
       return new Response(JSON.stringify({ error: "No items provided" }), {
@@ -20,6 +26,31 @@ export async function POST(req) {
       price: item.price,
       quantity: item.quantity,
     }));
+
+    // Vérification du stock
+for (const item of items) {
+  const productId = item.id; // ou item.title en version nettoyée
+
+  const ref = adminDb.collection("stock").doc(productId);
+  const snap = await ref.get();
+
+  if (!snap.exists) {
+    return NextResponse.json(
+      { error: `Produit inconnu : ${productId}` },
+      { status: 400 }
+    );
+  }
+
+  const data = snap.data();
+  const available = data.total - data.sold;
+
+  if (available < item.quantity) {
+    return NextResponse.json(
+      { error: `Stock insuffisant pour ${item.title}` },
+      { status: 400 }
+    );
+  }
+}
 
     const session = await stripe.checkout.sessions.create({
       mode: "payment",

@@ -134,6 +134,7 @@ export default function ProductPage({ params }) {
           }
         : undefined,
       stripePriceId: product.stripePriceId || "",
+      idFirestore: product.id || "",
     });
 
     // short delay to surface loader feedback

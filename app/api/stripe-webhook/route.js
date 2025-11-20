@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import * as Brevo from "@getbrevo/brevo";
 import { NextResponse } from "next/server";
+import { adminDb,admin } from "@/app/firebase/admin";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 const brevoClient = new Brevo.TransactionalEmailsApi();
@@ -66,6 +67,14 @@ export async function POST(req) {
       );
       if (!qty && totalQty > 0) {
         qty = String(totalQty);
+      }
+
+      for (const item of items) {
+        const ref = adminDb.collection("stock").doc(item.model);
+
+        await ref.update({
+          sold: admin.firestore.FieldValue.increment(item.quantity),
+        });
       }
 
       // Ex : "• Le Fantastic × 2\n• Le Drastick × 4\n• Extra Drastick - Bâton de secours × 1"

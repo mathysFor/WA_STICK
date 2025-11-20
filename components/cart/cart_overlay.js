@@ -87,6 +87,7 @@ export default function CartOverlay({ mode = "overlay" }) {
 items.forEach((line) => {
 
 
+console.log(line,);
 
 
   // ligne principale : paire de bâtons
@@ -95,6 +96,7 @@ items.forEach((line) => {
       price: line.stripePriceId,
       quantity: line.qty || 1,
       title : line.title,
+      id: line.idFirestore,
     });
   }
 
@@ -107,6 +109,7 @@ items.forEach((line) => {
       price: "price_1SVATwEiLgW0Mm2XghXp0yk4",
       quantity: 1,
       title : "Extra Drastick - Bâton de secours",
+      id: "extra"
     });
   }
 });
