@@ -15,6 +15,13 @@ export async function POST(req) {
   let signature;
   let event;
 
+  console.log("[FIREBASE ADMIN] projectId =", process.env.FIREBASE_ADMIN_PROJECT_ID);
+console.log("[FIREBASE ADMIN] clientEmail =", process.env.FIREBASE_ADMIN_CLIENT_EMAIL);
+console.log(
+  "[FIREBASE ADMIN] privateKey length =",
+  process.env.FIREBASE_ADMIN_PRIVATE_KEY?.length
+);
+
   try {
     rawBody = await req.text();
     signature = req.headers.get("stripe-signature");
