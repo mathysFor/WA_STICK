@@ -15,12 +15,7 @@ export async function POST(req) {
   let signature;
   let event;
 
-  console.log("[FIREBASE ADMIN] projectId =", process.env.FIREBASE_ADMIN_PROJECT_ID);
-console.log("[FIREBASE ADMIN] clientEmail =", process.env.FIREBASE_ADMIN_CLIENT_EMAIL);
-console.log(
-  "[FIREBASE ADMIN] privateKey length =",
-  process.env.FIREBASE_ADMIN_PRIVATE_KEY?.length
-);
+
 
   try {
     rawBody = await req.text();
@@ -75,9 +70,11 @@ console.log(
       if (!qty && totalQty > 0) {
         qty = String(totalQty);
       }
+      console.log(items);
+      
 
       for (const item of items) {
-        const ref = adminDb.collection("stock").doc(item.model);
+        const ref = adminDb.collection("stock").doc(item.id);
         await ref.update({
           sold: admin.firestore.FieldValue.increment(item.quantity),
         });

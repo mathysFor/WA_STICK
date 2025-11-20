@@ -73,6 +73,7 @@ for (const item of items) {
             quantity: item.quantity,
             title: item.title, // pratique aussi
             model: item.title.toLowerCase().replace(/\s+/g, "_"), // "Le Fantastic" → "le_fantastic"
+            id: item.id,
           }))
         ),
       },

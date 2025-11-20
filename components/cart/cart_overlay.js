@@ -87,7 +87,6 @@ export default function CartOverlay({ mode = "overlay" }) {
 items.forEach((line) => {
 
 
-console.log(line,);
 
 
   // ligne principale : paire de bâtons
