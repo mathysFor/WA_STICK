@@ -11,6 +11,10 @@ brevoClient.setApiKey(
 );
 
 export async function POST(req) {
+
+  console.log("🔥 PRIVATE KEY LENGTH:", process.env.FIREBASE_ADMIN_PRIVATE_KEY?.length);
+console.log("🔥 PRIVATE KEY START:", process.env.FIREBASE_ADMIN_PRIVATE_KEY?.slice(0, 30));
+console.log("🔥 PRIVATE KEY END:", process.env.FIREBASE_ADMIN_PRIVATE_KEY?.slice(-30));
   let rawBody;
   let signature;
   let event;
