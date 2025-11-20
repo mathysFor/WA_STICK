@@ -56,9 +56,17 @@ export async function POST(req) {
     let pdfUrl = null;
     let invoiceUrl = null;
 
+    console.log('====================================');
+    console.log(id);
+    console.log(qty);
+
+    console.log('====================================');
+
+
+
     const ref = adminDb.collection("stock").doc(id);
             await ref.update({
-              sold: admin.firestore.FieldValue.increment(qty),
+              sold: admin.firestore.FieldValue.increment(Number(qty) || 0),
             });
 
     try {
