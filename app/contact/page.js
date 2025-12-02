@@ -31,21 +31,21 @@ export default function Contact() {
             <input
               type="text"
               name="name"
-              placeholder="Nom"
+              placeholder="Nom & prénom"
               className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
             />
             <input
-              type="tel"
-              name="phone"
-              placeholder="Numéro de téléphone"
+              type="email"
+              name="email"
+              placeholder="Email"
               className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
             />
           </div>
 
           <input
-            type="tel"
-            name="phone2"
-            placeholder="Numéro de téléphone"
+            type="number"
+            name="commande"
+            placeholder="Numéro de commande (optionnel)"
             className="w-full rounded-md border border-gray-300 px-4 py-3 outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
           />
 

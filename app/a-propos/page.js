@@ -74,17 +74,17 @@ export default function Apropos() {
         </div>
 
         {/* Video placeholder / embed */}
-        <div className="mt-16">
-          <div className="relative w-full overflow-hidden rounded-2xl border border-black/10 bg-black/[.04]">
+        {/* <div className="mt-16">
+          <div className="relative w-full overflow-hidden rounded-2xl border border-black/10 bg-black/[.04]"> */}
             {/* 16/9 */}
-            <div className="relative w-full" style={{ paddingTop: "56.25%" }}>
+            {/* <div className="relative w-full" style={{ paddingTop: "56.25%" }}> */}
               {/* Remplace par un <iframe> YouTube/Vimeo */}
-              <div className="absolute inset-0 flex items-center justify-center text-lg font-semibold text-black/60">
-                VIDÉO WA ?
-              </div>
+              {/* <div className="absolute inset-0 flex items-center justify-center text-lg font-semibold text-black/60"> */}
+                {/* VIDÉO WA ? */}
+              {/* </div>
             </div>
           </div>
-        </div>
+        </div> */}
       </div>
     </section>
   );

@@ -54,6 +54,13 @@ export const Products = ({ fromShop }) => {
             <span className="ml-2 mt-10 text-sm">Faites défiler →</span>
           </div>
         </div>
+        <div className={"w-full flex "}>
+          {fromShop ? null :          
+     <button className={`mt-10 inline-flex items-center justify-center bg-[#E645AC] rounded-md px-6 py-3 text-sm font-medium text-white tracking-wide hover:opacity-90 active:opacity-80 mx-auto`}>
+          <Link href="/a-propos">Qui sommes-nous ?</Link>
+        </button>
+          }
+        </div>
       </div>
     </section>
   );

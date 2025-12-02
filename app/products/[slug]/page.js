@@ -5,6 +5,7 @@ import { getProductBySlug } from "@/lib/products";
 import {useCartStore} from "@/stores/useCartStore";
 import { useCartUI } from "@/stores/useCartUi";
 import { useRouter, usePathname } from "next/navigation";
+import Image from "next/image";
 
 export default function ProductPage({ params }) {
   const product = getProductBySlug(params.slug);
@@ -187,7 +188,10 @@ export default function ProductPage({ params }) {
               <img
                 src={IMAGES[active]}
                 alt="Drastick main"
-                className="h-full w-full object-cover"
+className="h-full w-full object-contain"
+
+
+
               />
             </div>
             <div className="mt-4 grid grid-cols-3 gap-4">

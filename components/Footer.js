@@ -23,6 +23,9 @@ export default function Footer() {
               <li>
                 <Link href="/legal/cgv" className="hover:underline">Conditions générales de vente</Link>
               </li>
+                <li>
+                <Link href="/legal/cgu" className="hover:underline">Conditions générales d'utilisation</Link>
+              </li>
             </ul>
           </div>
 
@@ -35,6 +38,9 @@ export default function Footer() {
               </li>
               <li>
                 <Link href="/contact" className="hover:underline">Contact</Link>
+              </li>
+                    <li>
+                <Link href="/contact" className="hover:underline">Réclamation</Link>
               </li>
             </ul>
           </div>
