@@ -2,7 +2,7 @@ import Stripe from "stripe";
 import { NextResponse } from "next/server";
 
 const stripeSecretKey = process.env.STRIPE_SECRET_WILLOU;
-const priceId = "price_1SVDGN2SUMsUUiRSXlt4JQUA";
+const priceId = "price_1Sb3QtCeOpCabCO82mJUyiN1";
 import { adminDb } from "@/app/firebase/admin";
 
 if (!stripeSecretKey) {
