@@ -157,12 +157,9 @@ export async function POST(req) {
       //    • Extra Drastick - Bâton de secours × 1
       const shippingAddress = session.customer_details?.address || {};
 
-      console.log("email", email);
-      
-      
 
       await brevoClient.sendTransacEmail({
-        to: [{ email: "mfornasier@yahoo.fr" }],
+        to: [{ email: "info@gabel.it" }],
         sender: { email: "wastick@wastick.com", name: "Mickael de Wastick" },
         templateId: 5,
         params: {
