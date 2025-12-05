@@ -97,6 +97,7 @@ export async function POST(req) {
         productSlug,
         id: body.id || "",
       },
+      allow_promotion_codes: true,
     });
 
     return NextResponse.json({ url: session.url });

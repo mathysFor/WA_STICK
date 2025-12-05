@@ -127,6 +127,7 @@ export async function POST(req) {
           phone : session.customer_details?.phone,
           qty : session?.metadata?.qty || "",
           sizes : session?.metadata?.sizes || "",
+          email: email,
         },
       });
 
