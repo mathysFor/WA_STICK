@@ -70,7 +70,7 @@ export async function POST(req) {
       mode: "payment",
       payment_method_types: ["card"],
       shipping_address_collection: {
-        allowed_countries: ["FR"],
+        allowed_countries: ["FR", "AT", "DE", "LU", "BE", "NL", "ES", "GB", "SE"],
       },
       line_items: [
         {

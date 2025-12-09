@@ -59,7 +59,7 @@ for (const item of items) {
       line_items: lineItems, // [{ price: 'price_xxx', quantity: 1 }, ...]
       payment_method_types: ["card"],
       shipping_address_collection: {
-        allowed_countries: ["FR"],
+        allowed_countries: ["FR", "AT", "DE", "LU", "BE", "NL", "ES", "GB", "SE"],
       },
       shipping_options: [
         {
