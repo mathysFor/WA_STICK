@@ -187,7 +187,6 @@ export async function POST(req) {
         invoice_url: invoiceUrl,
       });
 
-      console.log("✔ Emails envoyés (client + producteur) pour :", email);
     } catch (err) {
       console.error("❌ Erreur d'envoi Brevo :", err);
     }
@@ -214,7 +213,6 @@ export async function POST(req) {
         status: "completed",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
-      console.log("✔ Commande enregistrée dans Firestore pour :", email);
     } catch (err) {
       console.error("❌ Erreur enregistrement Firestore :", err);
     }

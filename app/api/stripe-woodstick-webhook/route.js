@@ -131,7 +131,6 @@ export async function POST(req) {
         },
       });
 
-      console.log("✔ Email envoyé à :", email);
     } catch (err) {
       console.error("❌ Erreur d'envoi Brevo :", err);
     }
@@ -159,7 +158,6 @@ export async function POST(req) {
         status: "completed",
         createdAt: admin.firestore.FieldValue.serverTimestamp(),
       });
-      console.log("✔ Commande enregistrée dans Firestore pour :", email);
     } catch (err) {
       console.error("❌ Erreur enregistrement Firestore :", err);
     }
