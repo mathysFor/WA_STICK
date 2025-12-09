@@ -189,7 +189,34 @@ export async function POST(req) {
 
       console.log("✔ Emails envoyés (client + producteur) pour :", email);
     } catch (err) {
-      console.error("❌ Erreur d’envoi Brevo :", err);
+      console.error("❌ Erreur d'envoi Brevo :", err);
+    }
+
+    // 🔹 Enregistrement de la commande dans Firestore
+    try {
+      await adminDb.collection("orders").add({
+        stripeSessionId: session.id,
+        stripePaymentIntent: session.payment_intent,
+        customer: {
+          email,
+          name,
+          phone: session.customer_details?.phone || null,
+        },
+        shipping: {
+          address: shippingAddress.line1 || null,
+          city: shippingAddress.city || null,
+          postalCode: shippingAddress.postal_code || null,
+          country: shippingAddress.country || null,
+        },
+        items: items.length > 0 ? items : [{ model: "Woodstick", qty, sizes: sizesText }],
+        amount,
+        invoiceUrl,
+        status: "completed",
+        createdAt: admin.firestore.FieldValue.serverTimestamp(),
+      });
+      console.log("✔ Commande enregistrée dans Firestore pour :", email);
+    } catch (err) {
+      console.error("❌ Erreur enregistrement Firestore :", err);
     }
   } catch (err) {
     console.error("❌ Erreur interne handler webhook :", err);
