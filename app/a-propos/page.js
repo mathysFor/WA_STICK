@@ -1,27 +1,34 @@
 import React from "react";
 import Image from "next/image";
-import teamPhoto from "../../assets/bg.jpg"; // placeholder, remplace si tu veux une photo par membre
+import mikaPhoto from "../../assets/photo_profil/mika.jpg";
+import mathysPhoto from "../../assets/photo_profil/mathys.jpg";
+import juliePhoto from "../../assets/photo_profil/julie.jpg";
+import wilouPhoto from "../../assets/photo_profil/wilou.jpg";
 
 const TEAM = [
   {
     name: "Mickaël",
     role: "Rider & Créateur",
-    desc: "Moteur du collectif, Mickael œuvre aussi bien dans la réalisation des vidéos que dans celle des podiums en allant jusqu’à remporter la plus prestigieuse des compétitions qu’est l’Extrem de Verbier en 2018 et terminant 3ème au classement général du Freeride World Tour.",
+    desc: "Moteur du collectif, Mickael œuvre aussi bien dans la réalisation des vidéos que dans celle des podiums en allant jusqu'à remporter la plus prestigieuse des compétitions qu'est l'Extrem de Verbier en 2018 et terminant 3ème au classement général du Freeride World Tour.",
+    photo: mikaPhoto,
   },
   {
     name: "Mathys",
     role: "Rider & Dev",
-    desc: "Rookie sur la scène compétitive, Mathys a déjà montré un engagement digne des plus grands avec pour priorité la réalisation de lignes originales où la majorité n'ose pas s’aventurer.",
+    desc: "Rookie sur la scène compétitive, Mathys a déjà montré un engagement digne des plus grands avec pour priorité la réalisation de lignes originales où la majorité n'ose pas s'aventurer.",
+    photo: mathysPhoto,
   },
   {
     name: "Julie",
     role: "Rider",
-    desc: "Le sourire de Winteractivity, vous le retrouverez chez Julie une énergie aussi bien solaire que musculaire lorsqu’il s’agit de faire la première trace en ski de randonnée. Vous pouvez compter sur elle pour inspirer la gente féminine et lui montrer qu’elle a sa place dans la pratique des sports extrêmes en montagne.",
+    desc: "Le sourire de Winteractivity, vous le retrouverez chez Julie une énergie aussi bien solaire que musculaire lorsqu'il s'agit de faire la première trace en ski de randonnée. Vous pouvez compter sur elle pour inspirer la gente féminine et lui montrer qu'elle a sa place dans la pratique des sports extrêmes en montagne.",
+    photo: juliePhoto,
   },
   {
     name: "William",
     role: "Rider",
-    desc: "L’un des pionniers du collectif, William a passé de nombreuses années sur le circuit des Qualifier avant de passer de l’autre côté des jumelles en tant que juge. Discret de nature, attaché à une pratique du sport sobre et éthique, vous retrouverez cette même ADN dans les films qu’il produit.",
+    desc: "L'un des pionniers du collectif, William a passé de nombreuses années sur le circuit des Qualifier avant de passer de l'autre côté des jumelles en tant que juge. Discret de nature, attaché à une pratique du sport sobre et éthique, vous retrouverez cette même ADN dans les films qu'il produit.",
+    photo: wilouPhoto,
   },
 ];
 
@@ -54,12 +61,12 @@ export default function Apropos() {
               key={p.name}
               className="overflow-hidden rounded-[10px] min-h-[400px] border border-black/10 bg-white shadow-sm hover:shadow-md transition-shadow"
             >
-              <div className="relative h-40 w-full">
+              <div className="relative h-60 lg:h-80 w-full">
                 <Image
-                  src={teamPhoto}
+                  src={p.photo}
                   alt={p.name}
                   fill
-                  className="object-cover"
+                  className="object-cover object-top "
                 />
               </div>
               <div className="p-5">
