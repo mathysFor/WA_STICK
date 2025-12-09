@@ -5,6 +5,7 @@ import { useCartUI } from "@/stores/useCartUi";
 import { useRouter, usePathname } from "next/navigation";
 import CartItem from "./card_item";
 import useCartStore from "@/stores/useCartStore";
+import { trackCheckoutStart, trackRemoveFromCart } from "@/lib/mixpanel";
 const fmt = (v) => {
   const n = Number(v ?? 0);
   if (Number.isNaN(n)) return String(v ?? "");
@@ -74,15 +75,25 @@ export default function CartOverlay({ mode = "overlay" }) {
   const items = useCartStore((s) => s.items);
   const inc = useCartStore((s) => s.inc);
   const dec = useCartStore((s) => s.dec);
-  const removeItem = useCartStore((s) => s.removeItem);
+  const removeItemStore = useCartStore((s) => s.removeItem);
   const toggleExtra = useCartStore((s) => s.toggleExtra);
   const getSubtotal = useCartStore((s) => s.getSubtotal);
+
+  // Wrapper pour tracker la suppression
+  const handleRemoveItem = (item) => {
+    trackRemoveFromCart(item);
+    removeItemStore(item.id);
+  };
 
 
   const handleCheckout = async () => {
 
     if (!items || items.length === 0 || isPaying) return;
- const lineItems = [];
+
+    // Track checkout start
+    trackCheckoutStart(items, getSubtotal());
+
+    const lineItems = [];
 
 items.forEach((line) => {
 
@@ -214,7 +225,7 @@ items.forEach((line) => {
                         totalEUR={lineTotal}
                         onDec={() => dec(line.id)}
                         onInc={() => inc(line.id)}
-                        onRemove={() => removeItem(line.id)}
+                        onRemove={() => handleRemoveItem(line)}
                         extraLabel={line.extra ? `${line.extra.label} pour ${fmt(line.extra.price)}` : undefined}
                         extraChecked={line.extra?.checked}
                         onToggleExtra={() => toggleExtra(line.id)}

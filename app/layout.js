@@ -5,6 +5,9 @@ import '@/styles/globals.css'
 
 import Footer from '@/components/Footer'
 
+const MixpanelProvider = dynamic(() => import("@/components/MixpanelProvider"), {
+  ssr: false,
+});
 
 const CartOverlay = dynamic(() => import("@/components/cart/cart_overlay"), {
   ssr: false,
@@ -28,15 +31,14 @@ export default function RootLayout({ children }) {
   return (
     <html lang="fr">
       <body className={`min-h-screen flex flex-col ${montserrat.className}`}>
-        <Bando/>
-        {/* ✅ Placée ici, la Topbar ne se re-render JAMAIS entre pages */}
-        <Topbar />
-         <CartOverlay mode="overlay" /> 
-        <main className="flex-1">{children}</main>
-        <Footer />
-
-
-
+        <MixpanelProvider>
+          <Bando/>
+          {/* ✅ Placée ici, la Topbar ne se re-render JAMAIS entre pages */}
+          <Topbar />
+          <CartOverlay mode="overlay" /> 
+          <main className="flex-1">{children}</main>
+          <Footer />
+        </MixpanelProvider>
       </body>
     </html>
   )

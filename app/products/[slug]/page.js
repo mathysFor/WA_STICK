@@ -6,6 +6,7 @@ import {useCartStore} from "@/stores/useCartStore";
 import { useCartUI } from "@/stores/useCartUi";
 import { useRouter, usePathname } from "next/navigation";
 import Image from "next/image";
+import { trackProductView, trackAddToCart, trackCheckoutStart } from "@/lib/mixpanel";
 
 export default function ProductPage({ params }) {
   const product = getProductBySlug(params.slug);
@@ -66,6 +67,11 @@ export default function ProductPage({ params }) {
     }
   }, []);
 
+  // Track product view
+  useEffect(() => {
+    trackProductView(product);
+  }, [product.slug]);
+
   const total = useMemo(() => {
     const pairsTotal = BASE_PRICE * qty;
     const rescueTotal = rescue ? RESCUE_PRICE : 0;
@@ -79,6 +85,10 @@ export default function ProductPage({ params }) {
 
     
  const handleBuyNow = async () => {
+    // Track checkout start
+    const totalAmount = BASE_PRICE * qty + (rescue ? RESCUE_PRICE : 0);
+    trackCheckoutStart([{ id: product.id, name: product.name, quantity: qty, price: BASE_PRICE }], totalAmount);
+
     try {
       const res = await fetch("/api/create-checkout-wood", {
         method: "POST",
@@ -133,6 +143,9 @@ export default function ProductPage({ params }) {
 
   const handleAddToCart = async () => {
     setAdding(true);
+
+    // Track add to cart
+    trackAddToCart(product, qty);
 
     const productId = `${product.slug}:${size}`;
     const firstImage = (product.images && product.images[0]) || "";
