@@ -545,6 +545,10 @@ className="h-full w-full object-contain"
               </button>
             </div>
 
+            {/* Description */}
+            <p className="mt-5 text-sm leading-6 text-gray-700">
+{product.description}
+            </p>
 
             {/* TECH SPECS (mobile) */}
             <div className="mt-6">
