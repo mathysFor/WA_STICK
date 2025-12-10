@@ -15,8 +15,6 @@ export async function POST(req) {
   let signature;
   let event;
 
-
-
   try {
     rawBody = await req.text();
     signature = req.headers.get("stripe-signature");
@@ -70,7 +68,6 @@ export async function POST(req) {
       if (!qty && totalQty > 0) {
         qty = String(totalQty);
       }
-      
 
       for (const item of items) {
         const ref = adminDb.collection("stock").doc(item.id);
@@ -93,9 +90,9 @@ export async function POST(req) {
       ? session.amount_total / 100
       : undefined;
 
-    // ✅ Si pas d’email, on ne tente rien
+    // ✅ Si pas d'email, on ne tente rien
     if (!email) {
-      console.error("❌ Pas d’email dans customer_details, on stop.");
+      console.error("❌ Pas d'email dans customer_details, on stop.");
       return NextResponse.json({ received: true });
     }
 
@@ -116,7 +113,7 @@ export async function POST(req) {
         }
       }
     } catch (err) {
-      console.error("❌ Erreur lors de la récupération de l’invoice :", err);
+      console.error("❌ Erreur lors de la récupération de l'invoice :", err);
     }
 
     // 🔹 Normalisation des tailles (ancien système)
@@ -134,7 +131,10 @@ export async function POST(req) {
       sizesText = String(sizes || "");
     }
 
-    // 🔹 Envoi de l’email au client via Brevo (template woodstick réutilisé)
+    // 🔹 Adresse de livraison (définie ici pour être accessible partout)
+    const shippingAddress = session.customer_details?.address || {};
+
+    // 🔹 Envoi de l'email au client via Brevo (template woodstick réutilisé)
     try {
       await brevoClient.sendTransacEmail({
         to: [{ email }],
@@ -155,8 +155,6 @@ export async function POST(req) {
       //    • Le Fantastic × 2
       //    • Le Drastick × 4
       //    • Extra Drastick - Bâton de secours × 1
-      const shippingAddress = session.customer_details?.address || {};
-
 
       await brevoClient.sendTransacEmail({
         to: [{ email: "info@gabel.it" }],
