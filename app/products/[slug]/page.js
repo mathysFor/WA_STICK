@@ -545,10 +545,6 @@ className="h-full w-full object-contain"
               </button>
             </div>
 
-            {/* Description */}
-            <p className="mt-5 text-sm leading-6 text-gray-700">
-              Le drastick est le bâton connu pour sa simplicité, légèreté. Sans dragone pour vous embêter, il vous accompagnera dans toutes vos sorties, freeride, freestyle, même sur les pistes.
-            </p>
 
             {/* TECH SPECS (mobile) */}
             <div className="mt-6">
