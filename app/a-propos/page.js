@@ -47,7 +47,7 @@ export default function Apropos() {
           pentes vierges, toujours animés par un trop plein l’énergie et de la
           bonne humeur. Composé de profils et de visions très variés, le fil
           rouge de leur chaîne YouTube est la performance en montagne, notamment
-          sur les compétitions du Freeride World Tour. On y découvrehjk les
+          sur les compétitions du Freeride World Tour. On y découvre les
           coulisses des riders, leur joie à l’entraînement et les défis qu’ils
           rencontrent. Il leur tient à cœur de démocratiser la pratique du ski
           en montagne et de vulgariser le fonctionnement du circuit
