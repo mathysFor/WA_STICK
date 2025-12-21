@@ -236,7 +236,16 @@ className="h-full w-full object-contain"
               <select
                 className="w-full max-w-xs rounded-md border border-gray-300 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
                 value={size}
-                onChange={(e) => setSize(e.target.value)}
+                onChange={(e) => {
+                  const newSize = e.target.value;
+                  setSize(newSize);
+                  // Synchroniser sizesList[0] avec la taille sélectionnée
+                  setSizesList((prev) => {
+                    const updated = [...prev];
+                    updated[0] = newSize;
+                    return updated;
+                  });
+                }}
               >
                 {(product?.options?.sizes || ["Taille unique"]).map((s) => (
                   <option key={s}>{s}</option>
@@ -428,7 +437,16 @@ className="h-full w-full object-contain"
               <select
                 className="w-full rounded-md border border-gray-300 px-4 py-2 text-sm outline-none focus:ring-2 focus:ring-gray-900 focus:border-gray-900"
                 value={size}
-                onChange={(e) => setSize(e.target.value)}
+                onChange={(e) => {
+                  const newSize = e.target.value;
+                  setSize(newSize);
+                  // Synchroniser sizesList[0] avec la taille sélectionnée
+                  setSizesList((prev) => {
+                    const updated = [...prev];
+                    updated[0] = newSize;
+                    return updated;
+                  });
+                }}
               >
                 {(product?.options?.sizes || ["Taille unique"]).map((s) => (
                   <option key={s}>{s}</option>
